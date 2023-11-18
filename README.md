@@ -40,7 +40,7 @@ Backend is completely built using Node NodeJs
 Clone the project
 
 ```bash
-  git clone https://github.com/Sathwik61/event-management-system
+  git clone https://github.com/Sathwik61/event-management-system.git
 ```
 
 Go to the project directory
