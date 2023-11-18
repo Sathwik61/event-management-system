@@ -1,0 +1,377 @@
+<!-- <form action="/logout?_method=DELETE" method="POST">
+  <button type="submit">Log Out</button>
+</form>
+ -->
+ <!DOCTYPE html>
+ <html lang="en">
+ 
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Admin Dashboard</title>
+     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"
+         integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ=="
+         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+ 
+     <style>
+         /* Add some styles for the popup modal */
+         #scannerModal {
+             display: none;
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: rgba(0, 0, 0, 0.5);
+             /* Semi-transparent black background */
+             z-index: 9999;
+             backdrop-filter: blur(8px);
+             /* Apply a blur effect */
+         }
+ 
+         #scannerContent {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             background: white;
+             padding: 40px;
+             /* Increased padding for a larger size */
+             border-radius: 8px;
+             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+             width: 80%;
+             /* Set the width to 80% of the parent container */
+             max-width: 600px;
+             /* Set a maximum width */
+         }
+     </style>
+ </head>
+ 
+ <body class="bg-gray-100 font-sans">
+ 
+     <!-- Navigation -->
+     <nav class="bg-blue-600 p-4 text-white">
+         <div class="container mx-auto flex justify-between items-center">
+             <span class="text-lg font-semibold">Hello, Admin</span>
+             <form action="/logout?_method=DELETE" method="POST">
+                 <button class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded" type="submit">Log Out</button>
+             </form>
+         </div>
+     </nav>
+ 
+     <!-- Hero Section -->
+     <div class="container mx-auto mt-8 p-4">
+ 
+         <!-- Circular Graph and Total Registrants Count -->
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <!-- Circular Graph -->
+             <div class="bg-white p-4 rounded-lg shadow-md">
+                
+                 <!-- Replace 'value' with the actual data -->
+                  <div class="text-center mb-4">
+                    <div class="mt-4 text-center">
+                        <form action="/downloaddata">
+                            <button id="dona" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white">Download Data </button>
+                        </form>
+                    </div>
+                  </div>
+                   <!-- <div class="rounded-full bg-blue-500 h-20 w-20 mx-auto flex items-center justify-center">   -->
+                     <!-- Replace 'value' with the actual data -->
+                     
+                     <!-- <span class="text-white text-lg font-semibold">
+                       
+                     </span> -->
+                 <!-- </div> -->
+             </div>
+ 
+             <!-- Total Registrants Count -->
+             <div class="bg-white p-4 rounded-lg shadow-md">
+                 <!-- Replace 'count' with the actual data -->
+                 <div class="text-center mb-4">Total Registrants</div>
+                 <div id="count" class="text-4xl font-bold text-blue-500 text-center">
+                     <!-- Replace 'count' with the actual data -->
+                    
+                 </div>
+             </div>
+         </div>
+ 
+         <!-- QR Code Scan Button -->
+         <div class="mt-4 text-right">
+             <button id="openScanner" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded">QR Code Scan</button>
+         </div>
+         <div class="mt-4 text-right">
+             <button id="table" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded">Show Data</button>
+         </div>
+ 
+         <!-- QR Code Scanner Modal -->
+         <div id="scannerModal">
+             <div id="scannerContent">
+                 <!-- Close Button -->
+                 <button id="closeScanner" class="absolute top-0 right-0 m-4 text-gray-700 hover:text-gray-900">
+                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                         </path>
+                     </svg>
+                 </button>
+                 <div id="reader"></div>
+               
+             </div>
+         </div>
+ 
+     </div>
+
+     <div class=" p-6">
+        
+
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    USN
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Phone
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Email
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    UniqueId
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Attendence
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody id="tbody">
+           
+            <!-- 99999 -->
+          
+         
+           
+        </tbody>
+    </table>
+</div>
+
+        
+     </div>
+ 
+     <script>
+         const scannerModal = document.getElementById('scannerModal');
+         const openScannerButton = document.getElementById('openScanner');
+         const closeScannerButton = document.getElementById('closeScanner');
+         const scannerContent = document.getElementById('scannerContent');
+         const tab=document.getElementById('table');
+         const tbody=document.getElementById('tbody')
+    
+         // function initScanner() {
+         //     // Clear existing scanner instance
+         //     if (scanner) {
+         //         scanner.clear();
+         //         scanner.stop();
+         //         scanner = null;
+         //     }
+         // }
+         let scanner = null;
+         if (scanner) {
+             scanner.clear();
+             scanner.stop();
+             scanner = null;
+         }
+ 
+ 
+ 
+         scanner = new Html5QrcodeScanner('reader', {
+             qrbox: {
+                 width: 250,
+                 height: 250,
+             },
+             fps: 20,
+         });
+         openScannerButton.addEventListener('click', async(e) => {
+ 
+             scannerModal.style.display = 'block';
+             document.body.style.overflow = 'hidden'; // Prevent scrolling behind the modal
+             // 
+             if (document.getElementById('reader') === null) {
+                 const readerElement = document.createElement('div');
+                 readerElement.id = 'reader';
+ 
+                 const scannerContent = document.getElementById('scannerContent');
+                 scannerContent.appendChild(readerElement);  
+             }
+ 
+             // 
+             scanner.render(success, error);
+            
+         });
+ 
+         closeScannerButton.addEventListener('click', () => {
+ 
+             closeScanner();
+         });
+ 
+         // Close the scanner when clicking outside the modal content
+         window.addEventListener('click', (event) => {
+             if (event.target === scannerModal) {
+ 
+                 closeScanner();
+             }
+         });
+ 
+         function closeScanner() {
+             scannerModal.style.display = 'none';
+             document.body.style.overflow = ''; // Enable scrolling when the modal is closed
+             scanner.clear();
+             scannerContent.innerHTML = '';
+         }
+         
+         function clos() {
+            //  scannerModal.style.display = 'none';
+             document.body.style.overflow = ''; // Enable scrolling when the modal is closed
+             scanner.clear();
+            //  scannerContent.innerHTML = '';
+         }
+         function success(result) {
+
+             console.log('QR Code Scanned:', result);
+             scannerContent.innerHTML = `
+             <h2 class="text-green-600 font-semibold">Success!</h2>
+             <p class="mt-2">${result}</p> 
+             
+
+             `;
+            
+           const d=hello(result)
+           console.log(d)
+           
+             clos();
+         }
+ 
+         function error(err) {
+             console.error(err);
+         }
+
+        //  const attbtn=document.getElementById('attend');
+        
+        // // attendence button
+        //  attbtn.addEventListener("click",(e)=>{
+        //     e.preventDefault();
+        //     alert("ndhkjsh")
+
+        //  })
+        
+      
+
+// Your hello function
+function hello(result) {
+    const encodedNumber = encodeURIComponent(result);
+   
+    
+fetch(`/submitAttendance?number=${encodedNumber}`)
+  .then(response => response.json())
+  .then(data => {
+    if (data.matchFound) {
+      // Update the UI to reflect successful attendance submission
+      
+
+      // Display user details if available
+      if (data.user) {
+        const rrr=data.user
+        console.log('User Details:', data.user);
+        scannerContent.innerHTML = `
+             <h2 class="text-green-600 font-semibold">${data.user[0].name}</h2>
+             <p class="mt-2">Attended!</p> 
+             
+
+             `;
+      }
+    } else {
+        // return {mmsg:"Incorrect details. Please try again."}
+      console.log('Incorrect details. Please try again.');
+    }
+  })
+  .catch(error => console.error('Error:', error));
+  
+}
+
+
+const dona=document.getElementById('dona');
+dona.addEventListener("click",(e)=>{
+
+})
+const cc=document.getElementById('count')
+
+
+// #############################################################
+
+tab.addEventListener("click", (e) => {
+  e.preventDefault();
+   
+  fetch(`/table`)
+  .then(response => response.json())
+  .then(data => {
+    if (data.matchFound) {
+    
+      if (data.user) {
+        let tdata='';
+        var countt=0;
+        // const mdata=data.user;
+        data.user.map((values)=>{
+            countt++;
+           tdata=`
+           
+           <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    ${values.name}
+                </th>
+                <td class="px-6 py-4">
+                    ${values.usn}
+                </td>
+                <td class="px-6 py-4">
+                    ${values.phone}
+                </td>
+                <td class="px-6 py-4">
+                    ${values.email}
+                </td>
+                <td class="px-6 py-4">
+                    ${values.uid}
+                </td>
+                <td class="px-6 py-4">
+                    ${values.attendence}
+                </td>
+               
+               
+            </tr>
+         
+           `
+           tbody.innerHTML+=tdata
+        })
+       
+
+        cc.innerText=countt;
+      }
+    } else {
+        // return {mmsg:"Incorrect details. Please try again."}
+      console.log('Incorrect details. Please try again.');
+    }
+  })
+  .catch(error => console.error('Error:', error));
+  
+
+});
+
+
+     </script>
+
+ 
+ </body>
+ 
+ </html>
