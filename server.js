@@ -23,7 +23,7 @@ initializePassport(
   id => users.find(user => user.id === id)
 )
 
-
+app.use(express.static('public'));
 // credential
 // const users=[]
 const users = [
@@ -186,8 +186,9 @@ app.post('/submit',async(req,res)=>{
   const uinid = new Date().getTime().toString();
   const filePath = await generateQRCode(uinid, 'png');
   const {name,usn,phone,email}=req.body;
+  console.log(name,usn,phone,email)
   const phoneNumber = parseInt(phone);
-  console.log(name,usn,phoneNumber ,email);
+  // console.log(name,usn,phoneNumber ,email);
   const newuser = new User({
     name: name,
     usn: usn,
@@ -203,7 +204,7 @@ app.post('/submit',async(req,res)=>{
   console.log("----->",filePath)
   sendEmailWithQRCode(email, filePath);
   // console.log('User saved successfully:', savedUser);
-  req.session.message = 'Your Data Saved';
+  req.session.message = 'Your Data Saved, check your mail for Admit Ticket';
   req.session.qrCodeFilename = filePath;
   // qrCodeFilename: filePath
   res.redirect('/');
